@@ -1,6 +1,10 @@
 <?php
 // INSERT INTO `notes` (`sno`, `title`, `description`, `tstamp`) VALUES ('1', 'Go to buy fruit', 'Hey sourabh, \r\nI want you to buy fruits.', current_timestamp());
 $insert = false;
+$update = false;
+$delete = false;
+
+
 
 $servername = "localhost";
 $username = "root";
@@ -13,6 +17,14 @@ if (!$conn) {
   die("Not Connected to database");
 }
 
+
+if ($_GET['delete']) {
+ $sno = $_GET['delete'];
+  echo $sno;
+  $sql = "DELETE FROM `notes` WHERE `sno`=$sno";
+  $result = mysqli_query($conn, $sql);
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   if (isset($_POST['snoEdit'])) {
@@ -23,6 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //Inserted data in database
     $sql = "UPDATE `notes` SET `title` = '$title', `description` = '$desc' WHERE `notes`.`sno` = '$snoEdit';";
     $result = mysqli_query($conn, $sql);
+    if($result){
+      $update = true;
+    }else{
+      echo "no!";
+    }
   } else {
 
 
@@ -140,6 +157,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>';
   }
   ?>
+  <?php
+  if ($delete) {
+    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> Your notes has been deleted successfully.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+  }
+  ?>
+  <?php
+  if ($update) {
+    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> Your notes has been updated successfully.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+  }
+  ?>
 
   <div class="container my-3">
     <h2>Add a Note</h2>
@@ -187,7 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <th scope='row'>" . $sno . "</th>
           <td>" . $row['title'] . "</td>
           <td>" . $row['description'] . "</td>
-          <td><button class='btn btn-sm btn-primary edit'  id=" . $row['sno'] . ">Edit</button> <button href='/del'>Delete</button>
+          <td><button class='btn btn-sm btn-primary edit'  id=" . $row['sno'] . ">Edit</button> <button class='btn btn-sm btn-primary delete'  id=d" . $row['sno'] . ">Delete</button>
           </td>
         </tr>";
         }
@@ -231,6 +268,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         snoEdit.value = e.target.id;
         console.log(e.target.id);
         $('#editModal').modal('toggle');
+      })
+    )
+//Delete note
+    deletes = document.getElementsByClassName('delete');
+    Array.from(deletes).forEach((element) =>
+      element.addEventListener("click", (e) => {
+        console.log("edit ", e.target.parentNode.parentNode);
+     sno = e.target.id.substr(1,)
+     if(confirm("Press a button!")){
+      console.log("yes");
+      window.location = `/Crud/index.php?delete=${sno}`;
+     }else{
+      console.log("no");
+     }
       })
     )
   </script>
