@@ -14,16 +14,29 @@ if (!$conn) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $title = $_POST['title'];
-  $desc = $_POST['desc'];
 
-  //Inserted data in database
-  $sql = "INSERT INTO `notes` (`title`, `description`, `tstamp`) VALUES ('$title', '$desc', current_timestamp());";
-  $result = mysqli_query($conn, $sql);
-  if ($result) {
-    $insert = true;
+  if (isset($_POST['snoEdit'])) {
+    $snoEdit = $_POST['snoEdit'];
+    $title = $_POST['titleEdit'];
+    $desc = $_POST['descEdit'];
+
+    //Inserted data in database
+    $sql = "UPDATE `notes` SET `title` = '$title', `description` = '$desc' WHERE `notes`.`sno` = '$snoEdit';";
+    $result = mysqli_query($conn, $sql);
   } else {
-    echo "Not inserted!";
+
+
+    $title = $_POST['title'];
+    $desc = $_POST['desc'];
+
+    //Inserted data in database
+    $sql = "INSERT INTO `notes` (`title`, `description`, `tstamp`) VALUES ('$title', '$desc', current_timestamp());";
+    $result = mysqli_query($conn, $sql);
+    if ($result) {
+      $insert = true;
+    } else {
+      echo "Not inserted!";
+    }
   }
 }
 
@@ -44,9 +57,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
   <title>iNotes - Notes taking made easy</title>
+
 </head>
 
 <body>
+
+  <!-- Button trigger modal -->
+  <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal">
+  Edit Modal
+</button> -->
+
+  <!--Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Note</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/Crud/index.php" method="post">
+            <input type="hidden" name="snoEdit" id="snoEdit">
+            <div class="form-group">
+              <label for="title">Note Title</label>
+              <input type="text" class="form-control" id="titleEdit" name="titleEdit" aria-describedby="emailHelp"
+                placeholder="Enter email">
+            </div>
+
+
+            <div class="form-group">
+              <label for="desc">Note Description</label>
+              <textarea class="form-control" id="descEdit" name="descEdit" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Note</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">iNotes</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -108,10 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php
     $sql = "SELECT * FROM `notes`";
     $result = mysqli_query($conn, $sql);
-    while ($row = mysqli_fetch_assoc($result)) {
-      echo $row['sno'] . ". Title " . $row['title'] . " desc is " . $row['description'];
-      echo "<br>";
-    }
+
     ?>
 
     <table class="table" id="myTable">
@@ -130,20 +182,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $result = mysqli_query($conn, $sql);
         $sno = 0;
         while ($row = mysqli_fetch_assoc($result)) {
-          $sno  +=1;
+          $sno += 1;
           echo "  <tr>
           <th scope='row'>" . $sno . "</th>
           <td>" . $row['title'] . "</td>
           <td>" . $row['description'] . "</td>
-          <td>Actions</td>
+          <td><button class='btn btn-sm btn-primary edit'  id=" . $row['sno'] . ">Edit</button> <button href='/del'>Delete</button>
+          </td>
         </tr>";
         }
+
         ?>
 
 
       </tbody>
     </table>
-<hr>
+    <hr>
 
   </div>
   <!-- Optional JavaScript -->
@@ -157,13 +211,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
-    <script src="//cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
- 
- <script>
-   $(document).ready(function () {
-     $('#myTable').DataTable();
-   });
- </script>
+  <script src="//cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('#myTable').DataTable();
+    });
+  </script>
+  <script>
+    edits = document.getElementsByClassName('edit');
+    Array.from(edits).forEach((element) =>
+      element.addEventListener("click", (e) => {
+        console.log("edit ", e.target.parentNode.parentNode);
+        tr = e.target.parentNode.parentNode;
+        title = tr.getElementsByTagName("td")[0].innerText;
+        desc = tr.getElementsByTagName("td")[1].innerText;
+        descEdit.value = desc;
+        titleEdit.value = title;
+        snoEdit.value = e.target.id;
+        console.log(e.target.id);
+        $('#editModal').modal('toggle');
+      })
+    )
+  </script>
 </body>
 
 </html>
