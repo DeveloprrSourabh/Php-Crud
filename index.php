@@ -4,8 +4,6 @@ $insert = false;
 $update = false;
 $delete = false;
 
-
-
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -16,11 +14,9 @@ $conn = mysqli_connect($servername, $username, $password, $database);
 if (!$conn) {
   die("Not Connected to database");
 }
-
-
 if ($_GET['delete']) {
- $sno = $_GET['delete'];
-  echo $sno;
+  $sno = $_GET['delete'];
+  $delete = true;
   $sql = "DELETE FROM `notes` WHERE `sno`=$sno";
   $result = mysqli_query($conn, $sql);
 }
@@ -35,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //Inserted data in database
     $sql = "UPDATE `notes` SET `title` = '$title', `description` = '$desc' WHERE `notes`.`sno` = '$snoEdit';";
     $result = mysqli_query($conn, $sql);
-    if($result){
+    if ($result) {
       $update = true;
-    }else{
+    } else {
       echo "no!";
     }
   } else {
@@ -97,17 +93,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
         <div class="modal-body">
           <form action="/Crud/index.php" method="post">
-            <input type="hidden" name="snoEdit" id="snoEdit">
+            <input type="hidden" name="snoEdit" id="snoEdit" required>
             <div class="form-group">
               <label for="title">Note Title</label>
-              <input type="text" class="form-control" id="titleEdit" name="titleEdit" aria-describedby="emailHelp"
+              <input type="text" class="form-control" id="titleEdit" name="titleEdit" aria-describedby="emailHelp" required
                 placeholder="Enter email">
             </div>
 
 
             <div class="form-group">
               <label for="desc">Note Description</label>
-              <textarea class="form-control" id="descEdit" name="descEdit" rows="3"></textarea>
+              <textarea class="form-control" id="descEdit" name="descEdit" rows="3" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Update Note</button>
           </form>
@@ -141,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       </ul>
       <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" >
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
       </form>
     </div>
@@ -183,14 +179,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <form action="/Crud/index.php" method="post">
       <div class="form-group">
         <label for="title">Note Title</label>
-        <input type="text" class="form-control" id="title" name="title" aria-describedby="emailHelp"
+        <input type="text" class="form-control" id="title" name="title" aria-describedby="emailHelp" required
           placeholder="Enter email">
       </div>
 
 
       <div class="form-group">
         <label for="desc">Note Description</label>
-        <textarea class="form-control" id="desc" name="desc" rows="3"></textarea>
+        <textarea class="form-control" id="desc" name="desc" rows="3" required></textarea>
       </div>
       <button type="submit" class="btn btn-primary">Add Note</button>
     </form>
@@ -270,18 +266,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $('#editModal').modal('toggle');
       })
     )
-//Delete note
+    //Delete note
     deletes = document.getElementsByClassName('delete');
     Array.from(deletes).forEach((element) =>
       element.addEventListener("click", (e) => {
         console.log("edit ", e.target.parentNode.parentNode);
-     sno = e.target.id.substr(1,)
-     if(confirm("Press a button!")){
-      console.log("yes");
-      window.location = `/Crud/index.php?delete=${sno}`;
-     }else{
-      console.log("no");
-     }
+        sno = e.target.id.substr(1,)
+        if (confirm("Press a button!")) {
+          console.log("yes");
+          window.location = `/Crud/index.php?delete=${sno}`;
+        } else {
+          console.log("no");
+        }
       })
     )
   </script>
